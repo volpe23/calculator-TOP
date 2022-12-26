@@ -4,6 +4,10 @@
     box-sizing: border-box;
 }
 .container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: flex-end;
     width: 350px;
     height: 450px;
     background-color: grey;
@@ -12,8 +16,13 @@
 }
 .input {
     /* margin: 40px auto; */
+    align-self: flex-start;
     width: 100%;
     padding: 0;
+}
+.options {
+    display: flex;
+    width: 100%;
 }
 #inputField {
     margin: 0 auto;
@@ -26,11 +35,46 @@
     flex-wrap: wrap;
     justify-content: center;
     align-items: flex-end;
-    width: 100%;
-    height: 50%;
+    width: 75%;
+    /* height: 50%; */
+}
+button {
+    cursor: pointer;
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: 700;
+    /* height: 40px; */
+    aspect-ratio: 3/2;
+    border-radius: 5px;
 }
 .number {
-    text-align: center;
+    
     width: 33.33%;
-    height: 33.333%;
+    /* height: 33.333%; */
+    
+}
+.number.zero {
+    /* width: 66.666%;
+    aspect-ratio: 3/1!important;
+    margin-right: auto; */
+}
+#deleteAll {
+    /* height: 100%!important; */
+    /* width: 25%; */
+    padding: 0;
+}
+.operations {
+    display: flex;
+    flex-direction: column;
+    width: 25%;
+}
+.option, .operation {
+    /* width: 25%; */
+    padding: 0;
+}
+.option {
+    width: 25%;
+}
+.opearation {
+    width: 100%;
 }
