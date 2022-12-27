@@ -7,23 +7,30 @@ const operations = document.querySelectorAll('.operation');
 console.log(operations)
 operations.forEach(el => {
     el.addEventListener('click', () => {
-        operationEvent();
-        lastOperation = el.value;
+        if (el.value === '=') {
+            calculation(lastOperation, +lastInput, +input.textContent);
+        } else {
+            operationEvent(el.value);
+            
+
+        }
     });
 });
 
 const opRegex = /[=+\-*/]/
 
 const input = document.querySelector('#inputField'); // Input field where numbers are added
-input.textContent = '0';
+input.textContent = '0'
 let lastInput = null;
 let lastOperation = null;
 let cleared = false;
-// let currInput = '0'
-// input.textContent = currInput;
+
 const deleteBtn = document.querySelector('#delete');
 deleteBtn.addEventListener('click', () => deleteLastDigit());
 
+function getCurrentValue() {
+    return input.textContent;
+}
 
 const clearAllButton = document.querySelector('#deleteAll');
 clearAllButton.addEventListener('click', () => clearAll());
@@ -41,10 +48,7 @@ numbers.forEach(num => {
         button.addEventListener('click', (e) => numberEvent(e.target.value));
     } else {
         if (num === '+/-') button.addEventListener('click', () => changeSign());
-        if (num === '.') {
-            button.addEventListener('click', () => addComma());
-            
-        }
+        if (num === '.') button.addEventListener('click', () => addComma());
     }
     numberDiv.appendChild(button);
 
@@ -58,31 +62,30 @@ function numberEvent(num) {
             
         }
         input.textContent += num;
-    } else if (!cleared && lastOperation) {
-        lastInput = input.textContent;
+    } else if (needClear()) {
+        lastInput = getCurrentValue()
         input.textContent = '';
         cleared = true;
         input.textContent += num;
     } 
-    else if (cleared && lastOperation) {
-        // calculation(lastOperation, +lastInput, +input.textContent);
-        input.textContent += num;
-    }
+    else input.textContent += num;
+    
 }
 
-function operationEvent() {
+function operationEvent(op) {
      
-    if (lastOperation !== null && cleared === true) {
-        console.log("Should show res")
-        calculation(lastOperation, +lastInput, +input.textContent);
+    if (lastOperation === null) {
+        lastOperation = op;
+        lastInput = getCurrentValue();
+        console.log('operation set');
         cleared = false;
     }
-        // calculation(lastOperation, +lastInput, +input.textContent);
-    console.log(lastOperation, +lastInput, +input.textContent);
+    else if (lastInput) calculation(lastOperation, +lastInput, +input.textContent);
     
 }
 function calculation(operation, numberOne, numberTwo) {
-    cleared = false;
+    // cleared = false;
+    lastOperation = null;
     if (operation === '+') {
         input.textContent = numberOne + numberTwo;
         return numberOne + numberTwo;
@@ -100,6 +103,13 @@ function calculation(operation, numberOne, numberTwo) {
         input.textContent = numberOne * numberTwo;
         return numberOne * numberTwo;
     }
+}
+
+function needClear() {
+    if (lastOperation && !cleared) {
+        return true;
+    }
+    return false;
 }
 
 function addComma() {
@@ -131,13 +141,9 @@ window.addEventListener('keydown', e => {
         numberEvent(val)
         console.log('number')
     } else if (/[+\-*/]/.test(val)) {
-        operationEvent();
-        lastOperation = val;
-        console.log('operation set');
+        operationEvent(val);
     } else if ((val === 'Enter' || val === '=') && lastOperation) {
         
-        const temp = input.textContent;
-        cleared ? console.log(lastInput) : lastInput = temp 
         calculation(lastOperation, +lastInput, +input.textContent);
         // lastInput = temp;
         // console.log('show sum')
