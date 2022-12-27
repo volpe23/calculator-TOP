@@ -3,11 +3,31 @@ const numbers = Array(10).fill().map((_, i) => (i)).reverse();
 numbers.push('.')
 numbers.splice(numbers.length-2, 0, '+/-');
 
-const input = document.querySelector('#inputField'); // Input field where numbers are added
+const operations = document.querySelectorAll('.operation');
+console.log(operations)
+operations.forEach(el => {
+    el.addEventListener('click', () => {
+        operation(el.value)
+    });
+});
 
+const opRegex = /[=+\-*/]/
+
+const input = document.querySelector('#inputField'); // Input field where numbers are added
+input.textContent = '0';
+let lastInput = null;
+let lastOperation = null;
+let cleared = false;
+// let currInput = '0'
+// input.textContent = currInput;
+
+
+const clearAllButton = document.querySelector('#deleteAll');
+clearAllButton.addEventListener('click', () => clearAll())
 // Get the div where numbers will be 
 const numberDiv = document.querySelector('.numbers');
 
+// Add numbers to the calculator
 numbers.forEach(num => {
     const button = document.createElement('button');
     button.classList.add('number');
@@ -24,17 +44,70 @@ numbers.forEach(num => {
 });
 
 function numberEvent(e) {
+    if (input.textContent === '0') input.textContent = ''
     input.textContent += e.target.value
 }
 
-function operationEvent(e) {
-    console.log('hey')
+
+
+function operation(opType) {
+     
+    if (lastOperation !== null && cleared === true) {
+    console.log("Should show res")
+    calculation(lastOperation, +lastInput, +input.textContent);
+    cleared = false;
+    }
+        // calculation(lastOperation, +lastInput, +input.textContent);
+    console.log(lastOperation, +lastInput, +input.textContent);
+    
+}
+function calculation(operation, numberOne, numberTwo) {
+
+    if (operation === '+') {
+        input.textContent = numberOne + numberTwo;
+        return numberOne + numberTwo;
+    }
+    else if (operation === '-') {
+        input.textContent = numberOne - numberTwo;
+        return numberOne - numberTwo;
+    }
+    else if (operation === '/') {
+        if (numberTwo === 0) return false
+        input.textContent = numberOne / numberTwo;
+        return numberOne / numberTwo;
+    }
+    else if (operation === '*') { 
+        input.textContent = numberOne * numberTwo;
+        return numberOne * numberTwo;
+    }
+
 }
 
-window.addEventListener('keydown', e => {
+function clearAll() {
+    lastInput = null;
+    lastOperation = null;
+    input.textContent = '0';
+}
 
-    const val = +(e.key);
-    if (val) {
+
+window.addEventListener('keydown', e => {
+    if (input.textContent === '0') input.textContent = ''
+    const val = (e.key);
+    console.log(val);
+    if (+val || val === '0') {
+        if (lastOperation !== null && cleared === false) {
+            lastInput = input.textContent;
+            input.textContent = '';
+            cleared = true;
+        }
         input.textContent += val;
+    } else if (/[+\-*/]/.test(val) || val === 'Enter' || val === '=') {
+        if (val !== 'Enter') lastOperation = val;
+        operation(val);
+         ;
     }
+    
+
+        // operation(val);
+    
 })
