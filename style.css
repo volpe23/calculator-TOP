@@ -27,9 +27,12 @@
 #inputField {
     background-color: white;
     margin: 0 auto;
-    width: 80%;
+    margin-bottom: 50px;
+    width: 95%;
     height: 30px;
     text-align: end;
+    font-size: 24px;
+    padding-right: 6px;
 }
 /* input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {

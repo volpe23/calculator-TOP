@@ -7,7 +7,8 @@ const operations = document.querySelectorAll('.operation');
 console.log(operations)
 operations.forEach(el => {
     el.addEventListener('click', () => {
-        operation(el.value)
+        operationEvent();
+        lastOperation = el.value;
     });
 });
 
@@ -35,7 +36,7 @@ numbers.forEach(num => {
     button.textContent = num;
     button.value = num;
     if (typeof(num) === 'number') {
-        button.addEventListener('click', numberEvent);
+        button.addEventListener('click', (e) => numberEvent(e.target.value));
     } else {
         console.log(typeof(num))
     }
@@ -43,26 +44,40 @@ numbers.forEach(num => {
 
 });
 
-function numberEvent(e) {
-    if (input.textContent === '0') input.textContent = ''
-    input.textContent += e.target.value
+function numberEvent(num) {
+
+    if (lastInput === null && lastOperation === null) {
+        if (input.textContent === '0') {
+            input.textContent = '';
+            
+        }
+        input.textContent += num;
+    } else if (!cleared && lastOperation) {
+        lastInput = input.textContent;
+        input.textContent = '';
+        cleared = true;
+        input.textContent += num;
+    } else if (cleared && lastOperation) {
+        calculation(lastOperation, +lastInput, +input.textContent);
+        
+    }
 }
 
 
 
-function operation(opType) {
+function operationEvent() {
      
     if (lastOperation !== null && cleared === true) {
-    console.log("Should show res")
-    calculation(lastOperation, +lastInput, +input.textContent);
-    cleared = false;
+        console.log("Should show res")
+        calculation(lastOperation, +lastInput, +input.textContent);
+        cleared = false;
     }
         // calculation(lastOperation, +lastInput, +input.textContent);
     console.log(lastOperation, +lastInput, +input.textContent);
     
 }
 function calculation(operation, numberOne, numberTwo) {
-
+    cleared = false;
     if (operation === '+') {
         input.textContent = numberOne + numberTwo;
         return numberOne + numberTwo;
@@ -93,21 +108,18 @@ function clearAll() {
 window.addEventListener('keydown', e => {
     if (input.textContent === '0') input.textContent = ''
     const val = (e.key);
-    console.log(val);
-    if (+val || val === '0') {
-        if (lastOperation !== null && cleared === false) {
-            lastInput = input.textContent;
-            input.textContent = '';
-            cleared = true;
-        }
-        input.textContent += val;
-    } else if (/[+\-*/]/.test(val) || val === 'Enter' || val === '=') {
-        if (val !== 'Enter') lastOperation = val;
-        operation(val);
-         ;
+    if (/\d/.test(val)) {
+        numberEvent(val)
+        console.log('number')
+    } else if (/[+\-*/]/.test(val)) {
+        operationEvent();
+        lastOperation = val;
+        console.log('operation set');
+    } else if ((val === 'Enter' || val === '=') && lastOperation) {
+        const temp = input.textContent;
+        calculation(lastOperation, +lastInput, +input.textContent);
+        // lastInput = temp;
+        console.log('show sum')
     }
-    
-
-        // operation(val);
-    
+    else return false;
 })
