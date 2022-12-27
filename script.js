@@ -21,10 +21,12 @@ let lastOperation = null;
 let cleared = false;
 // let currInput = '0'
 // input.textContent = currInput;
+const deleteBtn = document.querySelector('#delete');
+deleteBtn.addEventListener('click', () => deleteLastDigit());
 
 
 const clearAllButton = document.querySelector('#deleteAll');
-clearAllButton.addEventListener('click', () => clearAll())
+clearAllButton.addEventListener('click', () => clearAll());
 // Get the div where numbers will be 
 const numberDiv = document.querySelector('.numbers');
 
@@ -38,7 +40,11 @@ numbers.forEach(num => {
     if (typeof(num) === 'number') {
         button.addEventListener('click', (e) => numberEvent(e.target.value));
     } else {
-        console.log(typeof(num))
+        if (num === '+/-') button.addEventListener('click', () => changeSign());
+        if (num === '.') {
+            button.addEventListener('click', () => addComma());
+            
+        }
     }
     numberDiv.appendChild(button);
 
@@ -57,13 +63,12 @@ function numberEvent(num) {
         input.textContent = '';
         cleared = true;
         input.textContent += num;
-    } else if (cleared && lastOperation) {
-        calculation(lastOperation, +lastInput, +input.textContent);
-        
+    } 
+    else if (cleared && lastOperation) {
+        // calculation(lastOperation, +lastInput, +input.textContent);
+        input.textContent += num;
     }
 }
-
-
 
 function operationEvent() {
      
@@ -95,7 +100,21 @@ function calculation(operation, numberOne, numberTwo) {
         input.textContent = numberOne * numberTwo;
         return numberOne * numberTwo;
     }
+}
 
+function addComma() {
+    if (input.textContent.includes('.')) return false;
+    input.textContent += '.';
+}
+
+function changeSign() {
+    if (input.textContent.includes('-')) input.textContent = input.textContent.slice(1);
+    else input.textContent = '-' + input.textContent;
+}
+
+function deleteLastDigit() {
+    input.textContent = input.textContent.slice(0, -1);
+    if (input.textContent.length === 0) input.textContent = '0';
 }
 
 function clearAll() {
@@ -104,11 +123,11 @@ function clearAll() {
     input.textContent = '0';
 }
 
-
 window.addEventListener('keydown', e => {
-    if (input.textContent === '0') input.textContent = ''
+    
     const val = (e.key);
     if (/\d/.test(val)) {
+        if (input.textContent === '0') input.textContent = ''
         numberEvent(val)
         console.log('number')
     } else if (/[+\-*/]/.test(val)) {
@@ -116,10 +135,14 @@ window.addEventListener('keydown', e => {
         lastOperation = val;
         console.log('operation set');
     } else if ((val === 'Enter' || val === '=') && lastOperation) {
+        
         const temp = input.textContent;
+        cleared ? console.log(lastInput) : lastInput = temp 
         calculation(lastOperation, +lastInput, +input.textContent);
         // lastInput = temp;
-        console.log('show sum')
-    }
+        // console.log('show sum')
+    } else if (val === 'Backspace') {
+        deleteLastDigit();
+    } else if (val === '.') addComma();
     else return false;
 })
